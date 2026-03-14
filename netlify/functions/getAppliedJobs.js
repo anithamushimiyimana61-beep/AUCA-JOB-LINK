@@ -46,10 +46,28 @@ const authenticate = (event) => {
 };
 
 exports.handler = async (event, context) => {
+  // Set CORS headers
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Content-Type': 'application/json'
+  };
+
+  // Handle preflight requests
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers,
+      body: ''
+    };
+  }
+
   // Only allow GET requests
   if (event.httpMethod !== 'GET') {
     return {
       statusCode: 405,
+      headers,
       body: JSON.stringify({ message: 'Method not allowed' })
     };
   }
@@ -64,6 +82,7 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 200,
+      headers,
       body: JSON.stringify(jobs)
     };
   } catch (error) {
@@ -71,11 +90,13 @@ exports.handler = async (event, context) => {
     if (error.message === 'No token provided' || error.message === 'Invalid token') {
       return {
         statusCode: 401,
+        headers,
         body: JSON.stringify({ message: 'Unauthorized' })
       };
     }
     return {
       statusCode: 500,
+      headers,
       body: JSON.stringify({ message: 'Failed to fetch applied jobs' })
     };
   }

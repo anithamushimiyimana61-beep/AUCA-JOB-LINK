@@ -17,15 +17,42 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.models.User || mongoose.model('User', UserSchema);
 
 exports.handler = async (event, context) => {
+  // Set CORS headers
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Content-Type': 'application/json'
+  };
+
+  // Handle preflight requests
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers,
+      body: ''
+    };
+  }
+
   // Only allow POST requests
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
+      headers,
       body: JSON.stringify({ message: 'Method not allowed' })
     };
   }
 
   try {
+    // Check if environment variables are set
+    if (!process.env.MONGODB_URI) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ message: 'Database configuration error' })
+      };
+    }
+
     await connectDB();
 
     const { name, email, password, role } = JSON.parse(event.body);
@@ -33,6 +60,7 @@ exports.handler = async (event, context) => {
     if (!name || !email || !password) {
       return {
         statusCode: 400,
+        headers,
         body: JSON.stringify({ message: 'Missing required fields' })
       };
     }
@@ -46,6 +74,7 @@ exports.handler = async (event, context) => {
     if (existing) {
       return {
         statusCode: 400,
+        headers,
         body: JSON.stringify({ message: 'Email already registered' })
       };
     }
@@ -59,6 +88,7 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 201,
+      headers,
       body: JSON.stringify({
         message: 'User created',
         user: { id: user._id, email: user.email, role: user.role }
@@ -68,6 +98,7 @@ exports.handler = async (event, context) => {
     console.error('Register error:', error);
     return {
       statusCode: 500,
+      headers,
       body: JSON.stringify({ message: 'Registration failed' })
     };
   }

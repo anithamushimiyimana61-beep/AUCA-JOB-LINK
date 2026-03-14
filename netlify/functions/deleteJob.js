@@ -46,10 +46,28 @@ const authenticate = (event) => {
 };
 
 exports.handler = async (event, context) => {
+  // Set CORS headers
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'DELETE, OPTIONS',
+    'Content-Type': 'application/json'
+  };
+
+  // Handle preflight requests
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers,
+      body: ''
+    };
+  }
+
   // Only allow DELETE requests
   if (event.httpMethod !== 'DELETE') {
     return {
       statusCode: 405,
+      headers,
       body: JSON.stringify({ message: 'Method not allowed' })
     };
   }
@@ -66,6 +84,7 @@ exports.handler = async (event, context) => {
     if (!job) {
       return {
         statusCode: 404,
+        headers,
         body: JSON.stringify({ message: 'Job not found' })
       };
     }
@@ -74,6 +93,7 @@ exports.handler = async (event, context) => {
     if (user.role !== 'admin' && job.postedBy.toString() !== user.id) {
       return {
         statusCode: 403,
+        headers,
         body: JSON.stringify({ message: 'Not authorized to delete this job' })
       };
     }
@@ -82,6 +102,7 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 200,
+      headers,
       body: JSON.stringify({ message: 'Job deleted' })
     };
   } catch (error) {
@@ -89,11 +110,13 @@ exports.handler = async (event, context) => {
     if (error.message === 'No token provided' || error.message === 'Invalid token') {
       return {
         statusCode: 401,
+        headers,
         body: JSON.stringify({ message: 'Unauthorized' })
       };
     }
     return {
       statusCode: 500,
+      headers,
       body: JSON.stringify({ message: 'Failed to delete job' })
     };
   }

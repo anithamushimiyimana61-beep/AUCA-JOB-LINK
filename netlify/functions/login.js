@@ -18,24 +18,60 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.models.User || mongoose.model('User', UserSchema);
 
 exports.handler = async (event, context) => {
+  // Set CORS headers
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Content-Type': 'application/json'
+  };
+
+  // Handle preflight requests
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers,
+      body: ''
+    };
+  }
+
   // Only allow POST requests
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
+      headers,
       body: JSON.stringify({ message: 'Method not allowed' })
     };
   }
 
   try {
+    // Check if environment variables are set
+    if (!process.env.MONGODB_URI) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ message: 'Database configuration error' })
+      };
+    }
+
     await connectDB();
 
     const { email, password } = JSON.parse(event.body);
+
+    if (!email || !password) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ message: 'Email and password are required' })
+      };
+    }
 
     // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
       return {
         statusCode: 400,
+        headers,
         body: JSON.stringify({ message: 'Invalid credentials' })
       };
     }
@@ -44,6 +80,7 @@ exports.handler = async (event, context) => {
     if (user.password !== password) {
       return {
         statusCode: 400,
+        headers,
         body: JSON.stringify({ message: 'Invalid credentials' })
       };
     }
@@ -57,6 +94,7 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 200,
+      headers,
       body: JSON.stringify({
         token,
         role: user.role,
@@ -68,6 +106,7 @@ exports.handler = async (event, context) => {
     console.error('Login error:', error);
     return {
       statusCode: 500,
+      headers,
       body: JSON.stringify({ message: 'Server error' })
     };
   }
