@@ -10,7 +10,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const login = async (email, password) => {
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/login`, {
         email,
         password
       });
@@ -25,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const register = async (name, email, password, role) => {
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/register`, {
         name,
         email,
         password,

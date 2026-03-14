@@ -9,7 +9,7 @@ export const useJobStore = defineStore('jobs', () => {
   const fetchJobs = async () => {
     loading.value = true;
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/jobs`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/getJobs`);
       jobs.value = res.data;
     } catch (err) {
       console.error('Error fetching jobs:', err);
@@ -20,7 +20,7 @@ export const useJobStore = defineStore('jobs', () => {
 
   const createJob = async (jobData, token) => {
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/jobs`, jobData, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/createJob`, jobData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -34,7 +34,7 @@ export const useJobStore = defineStore('jobs', () => {
 
   const deleteJob = async (jobId, token) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/api/jobs/${jobId}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/deleteJob?id=${jobId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -63,14 +63,14 @@ export const useJobStore = defineStore('jobs', () => {
   };
 
   const applyToJob = async (jobId, token) => {
-    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/jobs/${jobId}/apply`, {}, {
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/applyToJob?id=${jobId}`, {}, {
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
   };
 
   const fetchAppliedJobs = async (token) => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/jobs/applied`, {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/getAppliedJobs`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
