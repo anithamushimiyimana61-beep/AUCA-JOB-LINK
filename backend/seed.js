@@ -158,12 +158,12 @@ async function seedDatabase() {
     }
 
     // Create admin user for testing
-    const adminExists = await User.findOne({ email: 'admin@auca.rw' });
+    const adminExists = await User.findOne({ email: 'HOD@auca.rw' });
     if (!adminExists) {
       await User.create({
         name: 'System Admin',
-        email: 'admin@auca.rw',
-        password: 'admin123',
+        email: 'HOD@auca.rw',
+        password: 'HOD123',
         role: 'admin'
       });
       console.log('✅ Created demo admin user');

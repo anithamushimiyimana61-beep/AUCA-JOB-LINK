@@ -81,4 +81,15 @@ router.post('/:id/apply', auth, async (req, res) => {
   }
 });
 
+// Get applied jobs for current user
+router.get('/applied', auth, async (req, res) => {
+  try {
+    const jobs = await Job.find({ 'applicants.user': req.user.id }).sort({ createdAt: -1 });
+    res.json(jobs);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch applied jobs' });
+  }
+});
+
 module.exports = router;

@@ -1,12 +1,37 @@
-arouter.post('/:id/apply', auth, async (req,res) => {
-  const job = await Job.findById(req.params.id);
-  if (!job) return res.status(404).json({message:'Job not found'});
-  // prevent duplicate
-  if (job.applicants?.some(a => a.user.toString() === req.user.id)) {
-     return res.status(400).json({message:'Already applied'});
+<template>
+  <div>
+    <JobSeekerDashboard v-if="role === 'student' || role === 'job_seeker'" />
+    <EmployerDashboard v-else-if="role === 'employer'" />
+    <div v-else class="loading">Redirecting...</div>
+  </div>
+</template>
+
+<script>
+import JobSeekerDashboard from './JobSeekerDashboard.vue';
+import EmployerDashboard from './EmployerDashboard.vue';
+
+export default {
+  components: { JobSeekerDashboard, EmployerDashboard },
+  computed: {
+    role() {
+      return localStorage.getItem('role');
+    }
+  },
+  mounted() {
+    if (!localStorage.getItem('token')) {
+      this.$router.push('/login');
+    }
   }
-  job.applicants = job.applicants || [];
-  job.applicants.push({ user: req.user.id, appliedAt: new Date() });
-  await job.save();
-  res.json({message:'Applied'});
-});
+};
+</script>
+
+<style scoped>
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 18px;
+  color: #666;
+}
+</style>

@@ -1,3 +1,4 @@
+dir /s /b package.jsondir /s /b package.jsondir /s /b package.json
 <template>
   <div class="home">
     <nav class="navbar">

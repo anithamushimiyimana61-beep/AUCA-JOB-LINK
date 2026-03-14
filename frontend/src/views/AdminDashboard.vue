@@ -128,7 +128,7 @@ export default {
         }
 
         await axios.post(
-          "http://localhost:5000/api/jobs",
+          `${import.meta.env.VITE_API_URL}/api/jobs`,
           {
             title: this.jobTitle,
             company: this.jobCompany,
@@ -137,7 +137,7 @@ export default {
           },
           {
             headers: {
-              Authorization: localStorage.getItem("token")
+              Authorization: `Bearer ${localStorage.getItem("token")}`
             }
           }
         );
@@ -155,7 +155,7 @@ export default {
     async fetchJobs() {
       try {
         this.loading = true;
-        const res = await axios.get("http://localhost:5000/api/jobs");
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/jobs`);
         this.jobs = res.data;
       } catch (err) {
         console.error(err);
@@ -166,9 +166,9 @@ export default {
     async deleteJob(id) {
       if (confirm("Delete this job?")) {
         try {
-          await axios.delete(`http://localhost:5000/api/jobs/${id}`, {
+          await axios.delete(`${import.meta.env.VITE_API_URL}/api/jobs/${id}`, {
             headers: {
-              Authorization: localStorage.getItem("token")
+              Authorization: `Bearer ${localStorage.getItem("token")}`
             }
           });
           await this.fetchJobs();

@@ -22,6 +22,7 @@
         <!-- Available Jobs Section -->
         <div class="section">
           <h2>Available Jobs ({{ filteredJobs.length }})</h2>
+          <p v-if="applyError" style="color: #e74c3c; background: #fadbd8; padding: 10px; border-radius: 5px;">{{ applyError }}</p>
           <div v-if="jobStore.loading" class="loading">Loading jobs...</div>
           <div v-else-if="filteredJobs.length === 0" class="no-jobs">
             No jobs available at the moment.
@@ -75,6 +76,13 @@ onMounted(async () => {
     router.push('/');
   }
   await jobStore.fetchJobs();
+  try {
+    const token = localStorage.getItem('token');
+    const applied = await jobStore.fetchAppliedJobs(token);
+    appliedJobs.value = applied.map(job => job._id);
+  } catch (err) {
+    console.error('Failed to fetch applied jobs:', err);
+  }
 });
 
 const handleLogout = () => {
@@ -82,9 +90,17 @@ const handleLogout = () => {
   router.push('/');
 };
 
-const handleApply = (job) => {
-  if (!appliedJobs.value.includes(job._id)) {
+const applyError = ref('');
+
+const handleApply = async (job) => {
+  if (appliedJobs.value.includes(job._id)) return;
+  try {
+    const token = localStorage.getItem('token');
+    await jobStore.applyToJob(job._id, token);
     appliedJobs.value.push(job._id);
+  } catch (err) {
+    applyError.value = err.response?.data?.message || 'Failed to apply';
+    setTimeout(() => applyError.value = '', 3000);
   }
 };
 </script>

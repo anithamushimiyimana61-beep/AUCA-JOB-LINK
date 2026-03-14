@@ -9,7 +9,7 @@ export const useJobStore = defineStore('jobs', () => {
   const fetchJobs = async () => {
     loading.value = true;
     try {
-      const res = await axios.get('http://localhost:5000/api/jobs');
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/jobs`);
       jobs.value = res.data;
     } catch (err) {
       console.error('Error fetching jobs:', err);
@@ -20,7 +20,7 @@ export const useJobStore = defineStore('jobs', () => {
 
   const createJob = async (jobData, token) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/jobs', jobData, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/jobs`, jobData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -34,7 +34,7 @@ export const useJobStore = defineStore('jobs', () => {
 
   const deleteJob = async (jobId, token) => {
     try {
-      await axios.delete(`http://localhost:5000/api/jobs/${jobId}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/jobs/${jobId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -47,7 +47,7 @@ export const useJobStore = defineStore('jobs', () => {
 
   const updateJob = async (jobId, jobData, token) => {
     try {
-      const res = await axios.put(`http://localhost:5000/api/jobs/${jobId}`, jobData, {
+      const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/jobs/${jobId}`, jobData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -62,12 +62,28 @@ export const useJobStore = defineStore('jobs', () => {
     }
   };
 
+  const applyToJob = async (jobId, token) => {
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/jobs/${jobId}/apply`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return res.data;
+  };
+
+  const fetchAppliedJobs = async (token) => {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/jobs/applied`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return res.data;
+  };
+
   return {
     jobs,
     loading,
     fetchJobs,
     createJob,
     deleteJob,
-    updateJob
+    updateJob,
+    applyToJob,
+    fetchAppliedJobs
   };
 });

@@ -48,7 +48,7 @@
     <div class="job-footer">
       <span class="date">{{ formatDate(job.createdAt) }}</span>
       <button v-if="showApply && !isApplied" @click="handleApply" class="apply-btn">Apply Now</button>
-      <span v-if="showApply && isApplied" class="applied-badge">✓ Done</span>
+      <button v-if="showApply && isApplied" class="done-btn" disabled>DONE</button>
     </div>
   </div>
 </template>
@@ -271,6 +271,18 @@ const formatDate = (dateString) => {
   background: #5568d3;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.done-btn {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-weight: 600;
+  cursor: not-allowed;
+  opacity: 0.8;
 }
 
 .applied-badge {

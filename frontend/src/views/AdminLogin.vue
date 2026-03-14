@@ -26,7 +26,7 @@ export default {
       try {
         this.error = "";
         const res = await axios.post(
-          "http://localhost:5000/api/auth/login",
+          `${import.meta.env.VITE_API_URL}/api/auth/login`,
           {
             email: this.email,
             password: this.password
@@ -41,7 +41,7 @@ export default {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("role", res.data.role);
 
-        this.$router.push("/admin-dashboard");
+        window.location.href = "/admin-dashboard";
       } catch (err) {
         this.error = err.response?.data?.message || "Login failed.";
       }

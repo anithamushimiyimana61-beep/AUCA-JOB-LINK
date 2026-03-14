@@ -5,12 +5,12 @@ import axios from 'axios';
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null);
   const token = ref(localStorage.getItem('token') || '');
-  const isAuthenticated = computed(() => !!user.value && !!token.value);
-  const userRole = computed(() => user.value?.role || null);
+  const isAuthenticated = computed(() => !!token.value);
+  const userRole = computed(() => user.value?.role || localStorage.getItem('role') || null);
 
   const login = async (email, password) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
         email,
         password
       });
@@ -25,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const register = async (name, email, password, role) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
         name,
         email,
         password,
