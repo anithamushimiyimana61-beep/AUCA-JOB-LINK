@@ -75,7 +75,7 @@ export default {
         await axios.post(
           cd "D:\AUCA JOB-LINK (2) (1)\AUCA JOB-LINK\frontend\auca-job-link-frontend"
           npm install
-          npm run dev          `${import.meta.env.VITE_API_URL}/api/jobs`,
+          npm run dev          `${import.meta.env.VITE_API_URL}/createJob`,
           {
             title: this.title,
             company: this.company,
@@ -99,7 +99,7 @@ export default {
     },
     async fetchJobs() {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/jobs`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/getJobs`);
         this.jobs = res.data;
       } catch (err) {
         console.error("Error fetching jobs:", err);
@@ -110,7 +110,7 @@ export default {
     async deleteJob(id) {
       if (confirm("Are you sure you want to delete this job?")) {
         try {
-          await axios.delete(`${import.meta.env.VITE_API_URL}/api/jobs/${id}`, {
+          await axios.delete(`${import.meta.env.VITE_API_URL}/deleteJob/${id}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`
             }

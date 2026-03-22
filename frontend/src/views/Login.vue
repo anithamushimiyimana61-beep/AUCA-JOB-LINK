@@ -38,7 +38,7 @@ export default {
       try {
         this.error = "";
         const res = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/auth/login`,
+          `${import.meta.env.VITE_API_URL}/login`,
           {
             email: this.email,
             password: this.password
